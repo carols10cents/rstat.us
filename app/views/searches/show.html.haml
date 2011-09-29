@@ -12,5 +12,5 @@
       %input#search-button.button{:type => "submit", :value => "Search"}
 
 #search-results
-  = render :partial => "updates/list", :locals => {:updates => @updates, :tagline => "No statuses match your search."}
+  = render :partial => "updates/list", :locals => {:updates => @results, :tagline => "No statuses match your search."}
 

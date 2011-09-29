@@ -3,14 +3,27 @@ class SearchesController < ApplicationController
     if params[:hashtag]
       @hashtag = params[:hashtag]
       render_index(Update.hashtag_search(@hashtag, params))
-      return
-    end
+    else
+      @results = []
 
-    @updates = []
-    if params[:q]
-      set_params_page
-      @updates = Update.where(:text => /\b#{Regexp.quote(params[:q])}\b/i).paginate(:page => params[:page], :per_page => params[:per_page], :order => :created_at.desc)
-      set_pagination_buttons(@updates)
+      if params[:q]
+        set_params_page
+
+        case params[:scope]
+        when "updates"
+          @results = Update.where(
+                       :text => /\b#{Regexp.quote(params[:q])}\b/i
+                     ).paginate(
+                       :page     => params[:page],
+                       :per_page => params[:per_page],
+                       :order    => :created_at.desc
+                     )
+        when "users"
+          @results = User.where()
+        end
+
+        set_pagination_buttons(@results)
+      end
     end
   end
 
