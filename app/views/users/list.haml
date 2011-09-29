@@ -4,7 +4,7 @@
 
 - if @authors.empty?
   %h3 No one yet!
-  Well, that's kind of boring.  Why not check out the links on the left to browse users or search rstat.us updates?
+  Well, that's kind of boring.  Why not check out the links on the left to browse updates or search rstat.us?
 
 - else
   = render :partial => "users/list", :locals => {:authors => @authors}
