@@ -1,8 +1,9 @@
 - unless defined?(id)
-  - id = (request.path_info.gsub("/", "_")[1..-1]) 
+  - id = (request.path_info.gsub("/", "_")[1..-1])
 
 %ul.updates.has-update-form{:id => id}
   - updates.each do |update|
+    - presenter = UpdatePresenter.new(update)
     - unless defined?(no_highlight) and no_highlight
       - mine = current_user.nil? ? false : (update.author.user == current_user)
       - mentioned = current_user.nil? ? false : update.mentioned?(current_user.username)
