@@ -32,7 +32,9 @@ describe "search" do
       fill_in "q", :with => "droids"
       click_button "Search"
 
-      assert_match @update_text, page.body
+      within search_results do
+        assert has_content? @update_text
+      end
     end
   end
 
@@ -50,18 +52,32 @@ describe "search" do
       fill_in "q", :with => "droids"
       click_button "Search"
 
-      assert_match @update_text, page.body
+      within search_results do
+        assert has_content? @update_text
+      end
     end
   end
 
   describe "behavior regardless of authenticatedness" do
+    it "has the updates scope selected by default" do
+      visit "/search"
+
+      assert has_select?("scope")
+
+      assert has_select?("scope",
+                         :options => ["updates", "users"],
+                         :selected => "updates")
+    end
+
     it "gets a match for a word in the update" do
       visit "/search"
 
       fill_in "q", :with => "droids"
       click_button "Search"
 
-      assert_match @update_text, page.body
+      within search_results do
+        assert has_content? @update_text
+      end
     end
 
     it "doesn't get a match for a substring ending a word in the update" do
@@ -70,7 +86,9 @@ describe "search" do
       fill_in "q", :with => "roids"
       click_button "Search"
 
-      assert_match "No statuses match your search.", page.body
+      within search_results do
+        assert has_content? "No statuses match your search."
+      end
     end
 
     it "doesn't get a match for a substring starting a word in the update" do
@@ -79,7 +97,9 @@ describe "search" do
       fill_in "q", :with => "loo"
       click_button "Search"
 
-      assert_match "No statuses match your search.", page.body
+      within search_results do
+        assert has_content? "No statuses match your search."
+      end
     end
 
     it "gets a case-insensitive match for a word in the update" do
@@ -88,7 +108,42 @@ describe "search" do
       fill_in "q", :with => "DROIDS"
       click_button "Search"
 
-      assert_match @update_text, page.body
+      within search_results do
+        assert has_content? @update_text
+      end
+    end
+
+    it "does not find users when you search for updates" do
+    end
+  end
+
+  describe "searching for users" do
+    before do
+      @user = Factory(:user, :username => "donknuth")
+    end
+
+    it "does find users with an exact match" do
+      visit "/search"
+
+      fill_in "q", :with => "donknuth"
+      select "users"
+      click_button "Search"
+
+      within search_results do
+        assert has_content? @user.username
+      end
+    end
+
+    it "does find users with a substring match" do
+    end
+
+    it "does find users with a case-insensitive match" do
+    end
+
+    it "has a nice message when there are no user matches" do
+    end
+
+    it "doesn't find updates when you search for users" do
     end
   end
 end

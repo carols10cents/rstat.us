@@ -73,4 +73,8 @@ module AcceptanceHelper
   def flash
     "#flash"
   end
+
+  def search_results
+    "#search-results"
+  end
 end
