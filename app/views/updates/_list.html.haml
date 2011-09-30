@@ -3,11 +3,12 @@
 
 %ul.updates.has-update-form{:id => id}
   - updates.each do |update|
-    - presenter = UpdatePresenter.new(update)
+    - decorated_update = UpdateDecorator.decorate(update)
     - unless defined?(no_highlight) and no_highlight
       - mine = current_user.nil? ? false : (update.author.user == current_user)
       - mentioned = current_user.nil? ? false : update.mentioned?(current_user.username)
     %li.update.hentry{:class => (mentioned ? "mention " : "") + (mine ? "mine " : ""), :id => "update-#{update.id}", "data-id" => update.id, "data-name" => update.author.username}
+<<<<<<< HEAD
       .author.vcard
         .avatar
           %a.url{:href => update.author.url}
@@ -32,6 +33,12 @@
         %span.in-reply
           %a{:href => update.referral_url}
             in reply to
+=======
+      = decorated_update.author_vcard
+      = decorated_update.entry_content
+      = decorated_update.published_metadata
+      = decorated_update.in_reply_to
+>>>>>>> poop
 
       .actions
         -# when @timeline is true, this is a list on the user's page
