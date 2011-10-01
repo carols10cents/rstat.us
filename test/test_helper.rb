@@ -72,3 +72,14 @@ module Pony
   end
 end
 
+# allow Capybara methods on a result tree fragment of HTML
+class String
+  def has_xpath?(path)
+    !Nokogiri::HTML(self).xpath(path).empty?
+  end
+
+  def has_css?(path)
+    has_xpath?(Nokogiri::CSS.xpath_for(path).join(' | '))
+  end
+end
+
