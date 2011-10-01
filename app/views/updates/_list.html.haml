@@ -43,9 +43,9 @@
       .actions
         -# when @timeline is true, this is a list on the user's page
         -unless current_user.nil? or (current_user.author.id == update.author.id)
-          %a.share{:href => "?share=#{update.id}"} share
+          = decorated_update.share
           |
-          %a.reply{:href => "?reply=#{update.id}"} reply
+          = decorated_update.reply
 
         - if current_user and update.author.id == current_user.author.id
           = form_tag "/updates/#{update.id}" do

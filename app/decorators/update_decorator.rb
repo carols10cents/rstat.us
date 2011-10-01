@@ -86,4 +86,16 @@ class UpdateDecorator < ApplicationDecorator
       "#{model.referral.author.username}"
     end
   end
+
+  def share
+    h.content_tag :a, :class => "share", :href => "?share=#{model.id}" do
+      "share"
+    end
+  end
+
+  def reply
+    h.content_tag :a, :class => "reply", :href => "?reply=#{model.id}" do
+      "reply"
+    end
+  end
 end
