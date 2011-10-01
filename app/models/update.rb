@@ -240,6 +240,10 @@ class Update
 
   end
 
+  def in_reply_to_username
+    referral.author.username
+  end
+
   def do_not_repeat_yourself
     errors.add(:text, "You already posted this update.") if feed.last_update && feed.last_update.id != id && feed.last_update.text == text && feed.last_update.author.id == author.id
   end

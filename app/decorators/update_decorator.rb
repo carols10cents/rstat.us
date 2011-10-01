@@ -83,7 +83,7 @@ class UpdateDecorator < ApplicationDecorator
 
   def in_reply_to_name
     h.content_tag :span, :class => "name" do
-      "#{model.referral.author.username}"
+      "#{model.in_reply_to_username}"
     end
   end
 
