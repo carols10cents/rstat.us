@@ -82,8 +82,13 @@ class UpdateDecorator < ApplicationDecorator
   end
 
   def in_reply_to_name
-    h.content_tag :span, :class => "name" do
-      "#{model.in_reply_to_username}"
+    name = model.in_reply_to_username
+    if name
+      h.content_tag :span, :class => "name" do
+        "#{name}"
+      end
+    else
+      ""
     end
   end
 

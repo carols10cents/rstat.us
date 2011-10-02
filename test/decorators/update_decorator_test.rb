@@ -16,6 +16,13 @@ describe UpdateDecorator do
       in_reply = @decorated_mock.in_reply_to_name
       assert in_reply.has_xpath?("//span[@class='name' and text()='bert']")
     end
+
+    it "returns empty string if in_reply_to_name is nil" do
+      @mock_update.stubs(:in_reply_to_username).returns(nil)
+      @decorated_mock = UpdateDecorator.decorate(@mock_update)
+      in_reply = @decorated_mock.in_reply_to_name
+      assert_equal "", in_reply
+    end
   end
 
   describe "#share" do
