@@ -47,6 +47,10 @@ class Update
     Update.first(:id => referral_id)
   end
 
+  def in_reply_to_local_update?
+    !referral.nil?
+  end
+
   def url
     feed.local? ? "/updates/#{id}" : remote_url
   end

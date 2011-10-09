@@ -230,4 +230,25 @@ describe Update do
       assert update.valid?
     end
   end
+
+  describe "in reply to" do
+    it "is in reply to a local update if referral" do
+      u1 = Factory(:update)
+      u2 = Factory(:update, :referral_id => u1.id)
+      assert u2.in_reply_to_local_update?
+      refute u2.in_reply_to_remote_update?
+    end
+
+    it "can be in reply to a remote update" do
+      u = Factory(:update...)
+      assert u.in_reply_to_remote_update?
+      refute u.in_reply_to_local_update?
+    end
+
+    it "can be not replying to anything" do
+      u = Factory(:update)
+      refute u.in_reply_to_local_update?
+      refute u.in_reply_to_remote_update?
+    end
+  end
 end
