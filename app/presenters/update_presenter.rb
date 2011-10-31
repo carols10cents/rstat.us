@@ -86,7 +86,7 @@ class UpdatePresenter
 
   def username_replying_to
     h.content_tag :span, :class => "name" do
-      @update.referral.author.username
+      @update.referral.username
     end
   end
 
