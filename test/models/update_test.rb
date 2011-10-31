@@ -3,6 +3,15 @@ require_relative '../test_helper'
 describe Update do
   include TestHelper
 
+  describe "username" do
+    it "returns the update's author's username" do
+      a = Factory(:author, :username => "luke_ravenstahl")
+      u = Factory(:update, :author => a)
+
+      assert_equal "luke_ravenstahl", u.username
+    end
+  end
+
   describe "text length" do
     it "is not valid without any text" do
       u = Factory.build(:update, :text => "")

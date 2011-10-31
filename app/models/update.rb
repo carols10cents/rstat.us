@@ -55,6 +55,10 @@ class Update
     self.remote_url = the_url
   end
 
+  def username
+    author.username
+  end
+
   def to_html
     self.html || generate_html
   end
