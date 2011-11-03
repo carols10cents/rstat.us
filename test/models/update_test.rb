@@ -12,6 +12,25 @@ describe Update do
     end
   end
 
+  describe "#made_by?" do
+    it "returns true if the update was made by the specified user" do
+      at = Factory(:author)
+      u = Factory(:user, :author => at)
+      update = Factory(:update, :text => "This is a message", :author => at)
+
+      assert update.made_by?(u)
+    end
+
+    it "returns false if the update was not made by the specified user" do
+      at = Factory(:author)
+      update = Factory(:update, :text => "This is a message", :author => at)
+
+      u = Factory(:user)
+
+      refute update.made_by?(u)
+    end
+  end
+
   describe "text length" do
     it "is not valid without any text" do
       u = Factory.build(:update, :text => "")

@@ -89,12 +89,8 @@ describe UpdatePresenter do
 
     describe "logged in user looking at their own update" do
       before do
-        @mock_user = mock
-        @mock_user.stubs(:author_id).returns(5)
-        @mock_template.stubs(:current_user).returns(@mock_user)
-
-        @mock_update.stubs(:author_id).returns(5)
-
+        @mock_template.stubs(:current_user).returns(mock)
+        @mock_update.stubs(:made_by?).returns(true)
         @action_output = @presenter.actions
       end
 
@@ -119,12 +115,8 @@ describe UpdatePresenter do
 
     describe "logged in user looking at someone else's update" do
       before do
-        @mock_user = mock
-        @mock_user.stubs(:author_id).returns(5)
-        @mock_template.stubs(:current_user).returns(@mock_user)
-
-        @mock_update.stubs(:author_id).returns(6)
-
+        @mock_template.stubs(:current_user).returns(mock)
+        @mock_update.stubs(:made_by?).returns(false)
         @action_output = @presenter.actions
       end
 
