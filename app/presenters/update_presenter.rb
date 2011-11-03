@@ -18,7 +18,7 @@ class UpdatePresenter
   def actions
     if h.current_user
       h.content_tag :div, :class => "actions" do
-        if @update.author_id == h.current_user.author_id
+        if @update.made_by?(h.current_user)
           delete_form
         else
           share + " | " + reply

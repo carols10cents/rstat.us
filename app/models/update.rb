@@ -59,6 +59,10 @@ class Update
     author.username
   end
 
+  def made_by?(user)
+    author_id == user.author_id
+  end
+
   def to_html
     self.html || generate_html
   end
