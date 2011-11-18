@@ -2,18 +2,12 @@
   - authors.each_with_index do |author, i|
     - next if author.nil?
     %li.user{:class => i%2 == 0 ? "even" : "odd"}
-      .avatar
-        %a{:href => author.url}
-          %img{:alt => "avatar", :src => author.avatar_url}/
+      - present author do |author_presenter|
+        = author_presenter.avatar
 
-      .info
-        %a{:href => author.url}
-          %b
-            = author.display_name
-
-          (#{author.username})
-        .bio
-          = author.bio
+        .info
+          = author_presenter.name_info
+          = author_presenter.bio
 
       - if current_user && current_user.feed != author.feed && author.feed
         - following = current_user.following_author?(author)

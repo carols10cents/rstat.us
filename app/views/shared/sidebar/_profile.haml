@@ -1,10 +1,9 @@
 - if current_user
   #current_user_block.vcard.block
-    .avatar
-      %a{:href=>"/users/#{current_user.username}"}
-        %img.photo{:alt => "avatar", :src => avatar_for(current_user.author)}/
+    - present current_user.author do |author_presenter|
+      = author_presenter.avatar
     .user-info
-      %h4.name 
+      %h4.name
         = current_user.author.display_name
       .nickname
         %a.url{:href=>"/users/#{current_user.username}"}

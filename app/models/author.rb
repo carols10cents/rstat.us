@@ -5,11 +5,6 @@
 class Author
   include MongoMapper::Document
 
-  # Constants that are useful for avatars using gravatar
-  GRAVATAR               = "gravatar.com"
-  DEFAULT_AVATAR         = "avatar.png"
-  ENCODED_DEFAULT_AVATAR = URI.encode_www_form_component(DEFAULT_AVATAR)
-
   # public keys are good for 4 weeks
   PUBLIC_KEY_LEASE_DAYS = 28
 
@@ -102,27 +97,6 @@ class Author
     end
   end
 
-  # Returns a locally useful url for the Author's avatar
-
-  # We've got a couple of options here. If they have some sort of image from
-  # Twitter, we use that, and if they don't, we go with Gravatar.
-  # If none of that is around, then we show the DEFAULT_AVATAR
-  def avatar_url
-
-    # If the user has a twitter image, return it
-    if image_url.present?
-      image_url
-
-    # If the user has an email (Don't they have to?), look for a gravatar url.
-    elsif email.present?
-      gravatar_url
-
-    # Otherwise return the default avatar
-    else
-      DEFAULT_AVATAR
-    end
-  end
-
   # Determine the display name from the username or name
   def display_name
 
@@ -134,13 +108,6 @@ class Author
     else
       username
     end
-  end
-
-  # Return the gravatar url
-  # Query described [here](http://en.gravatar.com/site/implement/images/#default-image).
-  def gravatar_url
-    email_digest = Digest::MD5.hexdigest email
-    "http://#{GRAVATAR}/avatar/#{email_digest}?s=48&r=r&d=#{ENCODED_DEFAULT_AVATAR}"
   end
 
   # Returns an OStatus::Author instance describing this author model

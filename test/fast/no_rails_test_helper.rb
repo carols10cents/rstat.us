@@ -24,6 +24,7 @@ class FakeTemplate
   include ActionView::Helpers::UrlHelper
   include ActionView::Helpers::DateHelper
   include ActionView::Helpers::FormTagHelper
+  include ActionView::Helpers::AssetTagHelper
   include ActionView::Context
 
   def protect_against_forgery?
@@ -36,5 +37,9 @@ class FakeTemplate
 
   def request_forgery_protection_token
     ""
+  end
+
+  def path_to_image(source)
+    source
   end
 end
