@@ -3,7 +3,8 @@
     - next if author.nil?
     %li.user{:class => i%2 == 0 ? "even" : "odd"}
       - present author do |author_presenter|
-        = author_presenter.avatar
+        - present author, AvatarPresenter do |avatar_presenter|
+          = avatar_presenter.avatar
 
         .info
           = author_presenter.name_info

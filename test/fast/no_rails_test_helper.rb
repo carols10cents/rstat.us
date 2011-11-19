@@ -42,4 +42,8 @@ class FakeTemplate
   def path_to_image(source)
     source
   end
+
+  def asset_path(path)
+    path
+  end
 end
