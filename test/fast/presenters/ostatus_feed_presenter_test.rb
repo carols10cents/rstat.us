@@ -6,7 +6,7 @@ require_relative '../../../app/presenters/ostatus_feed_presenter'
 
 describe OstatusFeedPresenter do
   before do
-    @mock_feed = mock
+    @mock_feed = stub_everything("feed")
     @mock_ostatus_feed = mock
     OStatus::Feed.expects(:from_data).returns(@mock_ostatus_feed)
     @presenter = OstatusFeedPresenter.new(@mock_feed, 'http://root-url.com/')

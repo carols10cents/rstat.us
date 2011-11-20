@@ -4,7 +4,9 @@ class OstatusFeedPresenter
   def initialize(feed, base_uri)
     @base_uri = base_uri
     @feed = feed
-    @ostatus_feed = OStatus::Feed.from_data
+    @ostatus_feed = OStatus::Feed.from_data(
+      url
+    )
   end
 
   def url
