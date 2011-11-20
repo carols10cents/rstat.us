@@ -1,12 +1,13 @@
 class FeedsController < ApplicationController
 
   def show
+    feed = Feed.first :id => params[:id]
+
     respond_to do |format|
       # Since feed url is the URI for the user,
       # redirect to the user's profile page
       # This is also our view for a particular feed
       format.html do
-        feed = Feed.first :id => params[:id]
         if feed.local?
           # Redirect to the local profile page
           redirect_to "/users/#{feed.author.username}"
@@ -19,12 +20,12 @@ class FeedsController < ApplicationController
       end
 
       format.atom do
-        # We do have to provide a rendered feed to the hub, and this controller does
-        # it. Publishers will also view a feed in order to verify their subscription.
-        feed = Feed.first :id => params[:id]
+        # We do have to provide a rendered feed to the hub, and this controller
+        # does it. Publishers will also view a feed in order to verify their
+        # subscription.
 
         # TODO: Abide by headers that supply cache information
-        render :text => feed.atom(root_url)
+        render :text => OstatusFeedPresenter.new(feed, root_url).atom
       end
     end
   end
