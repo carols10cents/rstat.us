@@ -4,16 +4,19 @@ class AvatarPresenter
   DEFAULT_AVATAR         = "avatar.png"
   ENCODED_DEFAULT_AVATAR = URI.encode_www_form_component(DEFAULT_AVATAR)
 
-  def initialize(avatar_holder, template)
+  def initialize(avatar_holder, template=nil)
     @avatar_holder = avatar_holder
     @template = template
   end
 
   def avatar
-    img = h.image_tag(avatar_url, :class => "photo", :alt => "avatar")
-    h.content_tag :div, :class => "avatar" do
-      h.link_to img, @avatar_holder.url, :class => "url"
-    end
+    html = <<-HERE
+     <div class="avatar">
+       <a href="#{@avatar_holder.url}" class="url">
+         <img src="#{avatar_url}" class="photo" alt="avatar" />
+       </a>
+     </div>
+    HERE
   end
 
   # Returns a locally useful url for the object's avatar
@@ -34,6 +37,14 @@ class AvatarPresenter
     # Otherwise return the default avatar
     else
       h.asset_path(DEFAULT_AVATAR)
+    end
+  end
+
+  def absolute_avatar_url(base_uri)
+    if avatar_url.start_with?("/")
+      "#{base_uri}#{avatar_url[1..-1]}"
+    else
+      avatar_url
     end
   end
 

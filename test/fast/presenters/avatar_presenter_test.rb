@@ -55,4 +55,20 @@ describe AvatarPresenter do
       assert_equal AvatarPresenter::DEFAULT_AVATAR, @presenter.avatar_url
     end
   end
+
+  describe "#absolute_avatar_url" do
+    it "makes a relative url into an absolute one" do
+      @presenter.stubs(:avatar_url).returns("/something/local.png")
+      absolute_url = @presenter.absolute_avatar_url("http://root-url.com/")
+
+      absolute_url.must_equal("http://root-url.com/something/local.png")
+    end
+
+    it "leaves an absolute url alone" do
+      @presenter.stubs(:avatar_url).returns("http://imgur.com/abc.png")
+      absolute_url = @presenter.absolute_avatar_url("http://root-url.com/")
+
+      absolute_url.must_equal("http://imgur.com/abc.png")
+    end
+  end
 end

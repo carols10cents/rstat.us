@@ -38,6 +38,10 @@ class Feed
     Author.find(author_id)
   end
 
+  def username
+    author.username
+  end
+
   def populate(xrd = nil)
     # TODO: More entropy would be nice
     self.verify_token = Digest::MD5.hexdigest(rand.to_s)

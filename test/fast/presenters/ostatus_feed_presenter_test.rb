@@ -6,8 +6,11 @@ require_relative '../../../app/presenters/ostatus_feed_presenter'
 
 describe OstatusFeedPresenter do
   before do
-    @mock_feed = stub_everything("feed")
+    @mock_author = stub_everything("author")
+    @mock_feed = stub_everything("feed", :author => @mock_author)
+
     @mock_ostatus_feed = mock
+
     OStatus::Feed.expects(:from_data).returns(@mock_ostatus_feed)
     @presenter = OstatusFeedPresenter.new(@mock_feed, 'http://root-url.com/')
   end
@@ -21,6 +24,13 @@ describe OstatusFeedPresenter do
     it "has an absolute url to the feed" do
       @mock_feed.stubs(:id).returns(3)
       @presenter.url.must_equal("http://root-url.com/feeds/3.atom")
+    end
+  end
+
+  describe "#title" do
+    it "makes a pretty title" do
+      @mock_feed.stubs(:username).returns("PookieWookums")
+      @presenter.title.must_equal("PookieWookums's Updates")
     end
   end
 
