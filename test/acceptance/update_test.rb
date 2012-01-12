@@ -38,6 +38,13 @@ describe "update" do
     assert_match update.text, page.body
   end
 
+  it "renders avatars with updates" do
+    update = Factory(:update)
+
+    visit "/"
+    skip "WRITE A TEST HERE"
+  end
+
   it "makes an update" do
     u = Factory(:user)
     a = Factory(:authorization, :user => u)
@@ -99,7 +106,7 @@ describe "update" do
     assert_match "/", page.current_url
   end
 
-  it "shows one update" do
+  it "shows one update when asked" do
     update = Factory(:update)
 
     visit "/updates/#{update.id}"
@@ -127,7 +134,7 @@ describe "update" do
       visit "/updates"
       fill_in "text", :with => "So this one time #coolstorybro"
       VCR.use_cassette('publish_to_hub') {click_button "Share"}
-      
+
       visit "/updates"
       click_link "#coolstorybro"
       assert_match "Search Updates", page.body

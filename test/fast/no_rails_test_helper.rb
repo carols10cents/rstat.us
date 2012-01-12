@@ -46,4 +46,8 @@ class FakeTemplate
   def asset_path(path)
     path
   end
+
+  def root_url
+    "http://example.com/"
+  end
 end

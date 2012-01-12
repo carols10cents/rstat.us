@@ -1,21 +1,21 @@
 class FeedsController < ApplicationController
 
   def show
-    feed = Feed.first :id => params[:id]
+    @feed = Feed.first :id => params[:id]
 
     respond_to do |format|
       # Since feed url is the URI for the user,
       # redirect to the user's profile page
       # This is also our view for a particular feed
       format.html do
-        if feed.local?
+        if @feed.local?
           # Redirect to the local profile page
-          redirect_to "/users/#{feed.author.username}"
+          redirect_to "/users/#{@feed.author.username}"
         else
           # Why not...
           # While weird, to render the view for this model, one
           # has to go to another site. This is the new age.
-          redirect_to feed.author.remote_url
+          redirect_to @feed.author.remote_url
         end
       end
 
@@ -25,7 +25,7 @@ class FeedsController < ApplicationController
         # subscription.
 
         # TODO: Abide by headers that supply cache information
-        render :text => OstatusFeedPresenter.new(feed, root_url).atom
+        render
       end
     end
   end

@@ -43,6 +43,14 @@ describe "profile" do
     assert has_link? "Edit"
   end
 
+  it "has your avatar" do
+    u = Factory(:user)
+    a = Factory(:authorization, :user => u)
+    log_in(u, a.uid)
+
+    assert has_selector?("#current_user_block .avatar a.url img.photo")
+  end
+
   describe "updating" do
     before do
       Pony.deliveries.clear

@@ -1,7 +1,7 @@
 - if current_user
   #current_user_block.vcard.block
     - present current_user.author, AvatarPresenter do |avatar_presenter|
-      = avatar_presenter.avatar
+      = avatar_presenter.avatar.html_safe
     .user-info
       %h4.name
         = current_user.author.display_name

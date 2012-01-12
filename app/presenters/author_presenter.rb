@@ -7,7 +7,7 @@ class AuthorPresenter
 
   def vcard
     h.content_tag :div, :class => "author vcard" do
-      AvatarPresenter.new(@author, @template).avatar + name_info
+      (AvatarPresenter.new(@author, @template).avatar + name_info).html_safe
     end
   end
 
