@@ -1,6 +1,6 @@
 require 'fileutils'
 
-unless Rails.env.production?
+unless Rails.env.production? || Rails.env == "staging"
   config_file = File.expand_path(File.join(Rails.root, '/config/config.yml'))
   config_file_sample = File.expand_path(File.join(Rails.root, '/config/config.yml.sample'))
 
