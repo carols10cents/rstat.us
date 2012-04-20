@@ -55,7 +55,13 @@ class Feed
     self.verify_token = Digest::MD5.hexdigest(rand.to_s)
     self.secret = Digest::MD5.hexdigest(rand.to_s)
 
-    ostatus_feed = OStatus::Feed.from_url(url)
+    begin
+      ostatus_feed = OStatus::Feed.from_url(url)
+    rescue Exception => e
+      puts "url = #{url}"
+      puts "e = #{e.inspect}"
+      puts "e.backtrace = #{e.backtrace.join("\n")}"
+    end
 
     avatar_url = ostatus_feed.icon
     if avatar_url == nil
