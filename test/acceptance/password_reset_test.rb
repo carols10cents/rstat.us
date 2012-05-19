@@ -10,7 +10,7 @@ describe "password reset" do
       token = u.create_token
       visit "/reset_password/#{token}"
 
-      assert_match "Set Password", page.body
+      assert_match "Password Reset", page.body
       assert_match "/reset_password/#{token}", page.current_url
     end
 

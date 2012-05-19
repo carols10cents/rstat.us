@@ -16,7 +16,7 @@ describe "signup" do
 
       u = User.first(:username => "new_user")
       refute u.nil?
-      assert User.authenticate("new_user", "mypassword")
+      assert u.authenticate("mypassword")
     end
 
     it "prompts for a new username if it contains spaces" do

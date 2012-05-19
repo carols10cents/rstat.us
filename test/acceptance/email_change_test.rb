@@ -9,21 +9,20 @@ describe "email change" do
 
       Notifier.expects(:send_confirm_email_notification)
 
-      # Log in to system
       u = Fabricate(:user, :email => "some@email.com")
-      u.password = "password"
-      u.save
-      pass_hash = u.hashed_password
       log_in_username(u)
 
       visit "/users/#{u.username}/edit"
+
       fill_in 'email', :with => 'team@jackhq.com'
       VCR.use_cassette('update_email') do
         click_button 'Save'
       end
 
-      # Need to figure out the best way to do this, expects is swallowing up token generation...
+      # Need to figure out the best way to do this, `Notifier.expects` is
+      # swallowing up token generation...
       # refute u.perishable_token.nil?
+
       within 'div.flash' do
         assert has_content? "A link to confirm your updated email address has been sent to team@jackhq.com"
       end
@@ -76,7 +75,4 @@ describe "email change" do
 
     end
   end
-
-
-
 end

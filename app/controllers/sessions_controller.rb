@@ -37,16 +37,16 @@ class SessionsController < ApplicationController
 
       render :new
     else
-      if user = User.authenticate(params[:username], params[:password])
-        session[:user_id] = user.id
+      if u.authenticate(params[:password])
+        session[:user_id] = u.id
         flash[:notice] = "Login successful."
         redirect_to root_path
-        return
-      end
-      flash[:error] = "The password given for username \"#{params[:username]}\" is incorrect.
+      else
+        flash[:error] = "The password given for username \"#{params[:username]}\" is incorrect.
 
-      If you are trying to create a new account, please choose a different username."
-      render :new
+        If you are trying to create a new account, please choose a different username."
+        render :new
+      end
     end
   end
 

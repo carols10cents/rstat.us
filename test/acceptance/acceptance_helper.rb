@@ -73,13 +73,11 @@ module AcceptanceHelper
   end
 
   def log_in_username(user)
-    User.stubs(:authenticate).returns(user)
-
     visit "/login"
 
     within("form") do
       fill_in "username", :with => user.username
-      fill_in "password", :with => "anything"
+      fill_in "password", :with => "fabricatorpassword"
     end
 
     click_button "Log in"

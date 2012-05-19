@@ -100,6 +100,22 @@ describe User do
     end
   end
 
+  describe "authenticate" do
+    before do
+      @u = Fabricate(:user,
+                     :username => "test_authenticate",
+                     :password => "yakshaving")
+    end
+
+    it "succeeds when the password entered is correct" do
+      assert @u.authenticate("yakshaving")
+    end
+
+    it "fails when the password entered is incorrect" do
+      refute @u.authenticate("notyakshaving")
+    end
+  end
+
   describe "email" do
     it "changes email" do
       u = Fabricate(:user)
