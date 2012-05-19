@@ -182,6 +182,20 @@ describe "Authorization" do
     end
   end
 
+  describe "/users/new" do
+    it "redirects to /login if you try to go to /users/new directly" do
+      # Since /users/new is where twitter users confirm or change their
+      # rstat.us username, going there directly and entering a username
+      # in the form does not create an account. Redirect to /login instead.
+
+      visit "/users/new"
+
+      assert has_no_button?("Finish Signup")
+      assert has_field?("password")
+      assert_match /\/login/, page.current_url
+    end
+  end
+
   describe "profile" do
     it "has an add twitter account button if no twitter auth" do
       log_in_as_some_user(:with => :username)

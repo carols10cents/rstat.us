@@ -71,8 +71,12 @@ class UsersController < ApplicationController
   end
 
   def new
-    params[:username] = session[:nickname]
-    @user = User.new
+    if session[:provider]
+      params[:username] = session[:nickname]
+      @user = User.new
+    else
+      redirect_to login_path
+    end
   end
 
   def create
