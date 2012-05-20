@@ -11,8 +11,19 @@ class SessionsController < ApplicationController
   # check if you're there, which is the first half of the `if`. The `else`
   # is your run-of-the-mill login procedure.
   def create
-    u = User.find_by_case_insensitive_username(params[:username])
-    if u.nil?
+    u = warden.authenticate
+
+    if u
+      flash[:notice] = "Login successful."
+      redirect_to root_path
+
+    elsif warden.message == "Incorrect password"
+      flash[:error] = "The password given for username \"#{params[:username]}\" is incorrect.
+
+      If you are trying to create a new account, please choose a different username."
+      render :new
+
+    elsif warden.message == "User does not exist yet"
       # Grab the domain for this author from the request url
       params[:domain] = root_url
 
@@ -26,7 +37,7 @@ class SessionsController < ApplicationController
       if @user.valid?
         if params[:password].length > 0
           @user.save
-          session[:user_id] = @user.id
+          warden.set_user(@user)
           flash[:notice] = "Thanks for signing up!"
           redirect_to root_path
           return
@@ -36,22 +47,11 @@ class SessionsController < ApplicationController
       end
 
       render :new
-    else
-      if u.authenticate(params[:password])
-        session[:user_id] = u.id
-        flash[:notice] = "Login successful."
-        redirect_to root_path
-      else
-        flash[:error] = "The password given for username \"#{params[:username]}\" is incorrect.
-
-        If you are trying to create a new account, please choose a different username."
-        render :new
-      end
     end
   end
 
   def destroy
-    session[:user_id] = nil
+    warden.logout
     flash[:notice] = "You've been logged out."
     redirect_to root_path
   end

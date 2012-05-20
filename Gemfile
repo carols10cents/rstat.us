@@ -34,6 +34,7 @@ gem "rsa"
 gem "exceptional"
 gem "newrelic_rpm"
 gem "draper"
+gem "warden"
 
 # background job queue
 gem "delayed_job", :git => "git://github.com/collectiveidea/delayed_job.git", :tag => "v2.1.4"

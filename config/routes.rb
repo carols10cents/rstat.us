@@ -1,6 +1,6 @@
 RstatUs::Application.routes.draw do
-  root :to => "static#homepage", :constraints => lambda {|x| x.session[:user_id] == nil}
-  root :to => "updates#timeline", :constraints => lambda {|x| x.session[:user_id] != nil}
+  root :to => "static#homepage", :constraints => lambda {|x| x.env["warden"].user.nil?}
+  root :to => "updates#timeline", :constraints => lambda {|x| x.env["warden"].user }
 
   # Sessions
   resources :sessions, :only => [:new, :create, :destroy]

@@ -296,6 +296,8 @@ GEM
       rack
       raindrops (~> 0.6)
     vcr (1.10.3)
+    warden (1.2.0)
+      rack (>= 1.0)
     webmock (1.6.4)
       addressable (~> 2.2, > 2.2.5)
       crack (>= 0.1.7)
@@ -349,5 +351,6 @@ DEPENDENCIES
   uglifier
   unicorn
   vcr
+  warden
   webmock
   whenever

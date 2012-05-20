@@ -20,8 +20,7 @@ class ApplicationController < ActionController::Base
   # keep track of that by just setting a session variable with their id. If it
   # doesn't exist, we just want to return nil.
   def current_user
-    return unless session[:user_id]
-    @current_user ||= User.first(:id => session[:user_id])
+    @current_user ||= warden.user
   end
 
   # This very simple method checks if we've got a logged in user. That's pretty
@@ -118,6 +117,10 @@ private
   def redirect_with_sorry(opts)
     flash[:error] = "Sorry, buddy"
     redirect_to opts[:return]
+  end
+
+  def warden
+    env["warden"]
   end
 
 end
