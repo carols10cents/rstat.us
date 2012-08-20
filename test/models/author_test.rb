@@ -3,7 +3,15 @@ require_relative '../test_helper'
 describe Author do
   include TestHelper
   before do
-    @author = Fabricate :author, :username => "james", :email => nil, :image_url => nil, :created_at => 3.days.ago
+    @author = Fabricate(:author,
+                        :username   => "james",
+                        :email      => nil,
+                        :image_url  => nil,
+                        :created_at => 3.days.ago
+                       )
+    @remote_author = Fabricate(:remote_author,
+                               :username => "jimmy"
+                              )
   end
 
   it "creates an author from a hash" do
@@ -12,24 +20,20 @@ describe Author do
   end
 
   it "returns remote_url as the url if set" do
-    @author.remote_url = "some_url.com"
-    assert_equal @author.remote_url, @author.url
+    assert_equal @remote_author.remote_url, @remote_author.url
   end
 
   describe "#fully_qualified_name" do
-
     it "returns simple name if a local user" do
       assert_equal "james", @author.fully_qualified_name
     end
 
     it "returns name with domain if a remote user" do
-      @author.remote_url = "some_url.com"
-      assert_equal "james@foo.example.com", @author.fully_qualified_name
+      assert_equal "jimmy@some_url.com", @remote_author.fully_qualified_name
     end
   end
 
   describe "#avatar_url" do
-
     it "returns image_url as avatar_url if image_url is set" do
       image_url = 'http://example.net/cool-avatar'
       @author.image_url = image_url

@@ -7,3 +7,8 @@ Fabricator(:author) do
   name "Something"
   bio "Hi, I do stuff."
 end
+
+Fabricator(:remote_author, :from => :author) do
+  domain "some_url.com"
+  remote_url "some_url.com/#{username}"
+end
