@@ -258,7 +258,7 @@ class Update
       elsif not $3 and a = Author.first(:username => /^#{$2}$/i)
         author_url = a.url
         if author_url.start_with?("/")
-          author_url = "http://#{author.domain}#{author_url}"
+          author_url = "http://#{a.domain}#{author_url}"
         end
         "#{$1}<a href='#{author_url}'>@#{$2}</a>"
       else
