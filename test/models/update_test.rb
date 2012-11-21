@@ -7,33 +7,35 @@ describe Update do
   describe "search" do
     describe "blank query" do
       before do
-        20.times { |count| Fabricate(:update, :text => "This is update #{count}") }
+        2.times { |count| Fabricate(:update, :text => "This is update #{count}") }
       end
 
       it "returns all updates when the query is blank" do
-        assert_equal 20, Update.search("", {:from => 0, :size => 20}).count
+        assert_equal 2, Update.search("", {:from => 0, :size => 20}).count
       end
 
       it "can paginate through all updates" do
-        page_1_updates = Update.search("", {:from => 0, :size => 3})
-        page_2_updates = Update.search("", {:from => 3, :size => 3})
+        page_1_updates = Update.search("", {:from => 0, :size => 1})
+        page_2_updates = Update.search("", {:from => 1, :size => 1})
 
         page_1_updates.wont_equal page_2_updates
       end
     end
 
-    it "returns an update that matches the given query" do
-      10.times { |count| Fabricate(:update, :text => "This is update #{count}") }
-      Fabricate(:update, :text => "Something different to look for")
-      10.times { |count| Fabricate(:update, :text => "This is update #{count+10}") }
-      assert_equal 1, Update.basic_search("something different", {:from => 0, :size => 20}).count
-    end
+    describe "#basic_search, used when ElasticSearch isn't set up" do
+      it "returns one update that matches the given query" do
+        Fabricate(:update, :text => "This is update 1")
+        Fabricate(:update, :text => "Something different to look for")
+        Fabricate(:update, :text => "This is update 2")
+        assert_equal 1, Update.basic_search("something different", {:from => 0, :size => 20}).count
+      end
 
-    it "returns updates that match the given query" do
-      5.times { |count| Fabricate(:update, :text => "This is update #{count}") }
-      3.times { |count| Fabricate(:update, :text => "Something else to look for") }
-      15.times { |count| Fabricate(:update, :text => "This is update #{count}") }
-      assert_equal 3, Update.basic_search("look for", {:from => 0, :size => 20}).count
+      it "returns multiple updates that match the given query" do
+        Fabricate(:update, :text => "This is update 1")
+        2.times { |count| Fabricate(:update, :text => "Something else to look for") }
+        Fabricate(:update, :text => "This is update 2")
+        assert_equal 2, Update.basic_search("look for", {:from => 0, :size => 20}).count
+      end
     end
   end
 
