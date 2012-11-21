@@ -133,12 +133,12 @@ describe Feed do
 
   describe "#url" do
     it "does not end in .atom by default" do
-      f = Fabricate(:feed)
+      f = Feed.new(:remote_url => "http://example.net")
       f.url.wont_match(/\.atom$/)
     end
 
     it "does end in .atom if we ask it to" do
-      f = Fabricate(:feed)
+      f = Feed.new(:remote_url => "http://example.net")
       f.url(:format => :atom).must_match(/\.atom$/)
     end
   end

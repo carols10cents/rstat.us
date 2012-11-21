@@ -54,156 +54,138 @@ describe Update do
     end
   end
 
-  describe "@ replies" do
-    describe "non existing user" do
-      it "does not make links (before create)" do
-        u = Fabricate.build(:update, :text => "This is a message mentioning @steveklabnik.")
-        assert_match "This is a message mentioning @steveklabnik.", u.to_html
+  describe "#generate_html/#to_html" do
+    describe "@ replies" do
+      describe "mention of a non existing author" do
+        it "does not make links" do
+          u = Update.new(:text => "This is a message mentioning @steveklabnik.")
+
+          assert_match "This is a message mentioning @steveklabnik.", u.to_html
+        end
       end
 
-      it "does not make links (after create)" do
-        u = Fabricate(:update, :text => "This is a message mentioning @steveklabnik.")
-        assert_match "This is a message mentioning @steveklabnik.", u.to_html
-      end
-    end
+      describe "mention of an existing local author" do
+        it "makes a link" do
+          Fabricate(:author, :username => "steveklabnik")
+          u = Fabricate.build(:update, :text => "This is a message mentioning @SteveKlabnik.")
 
-    describe "existing user" do
-      before do
-        Fabricate(:user, :username => "steveklabnik")
+          assert_match /\/users\/steveklabnik'>@SteveKlabnik<\/a>/, u.to_html
+        end
       end
 
-      it "makes a link (before create)" do
-        u = Fabricate.build(:update, :text => "This is a message mentioning @SteveKlabnik.")
-        assert_match /\/users\/steveklabnik'>@SteveKlabnik<\/a>/, u.to_html
+      describe "mention of a remote author that we know about" do
+        it "makes a link" do
+          author = Fabricate(:author, :username => "steveklabnik",
+                                      :domain => "identi.ca",
+                                      :remote_url => 'http://identi.ca/steveklabnik')
+          u = Update.new(:text => "This is a message mentioning @SteveKlabnik@identi.ca.")
+
+          assert_match /<a href='#{author.url}'>@SteveKlabnik@identi.ca<\/a>/, u.to_html
+        end
       end
 
-      it "makes a link (after create)" do
-        u = Fabricate(:update, :text => "This is a message mentioning @SteveKlabnik.")
-        assert_match /\/users\/steveklabnik'>@SteveKlabnik<\/a>/, u.to_html
-      end
-    end
+      describe "mention of an author we know about by a remote author" do
+        it "makes a link" do
+          mentioned = Fabricate(:author,
+                                :username => "chrismdp",
+                                :domain => "rstat.us")
+          author    = Fabricate(:author,
+                                :username => "steveklabnik",
+                                :domain => "identi.ca",
+                                :remote_url => 'http://identi.ca/steveklabnik')
+          u = Update.new(:text => "This is a message mentioning @chrismdp@rstat.us.", :author => author)
 
-    describe "existing user with domain" do
-      it "makes a link (before create)" do
-        @author = Fabricate(:author, :username => "steveklabnik",
-                                   :domain => "identi.ca",
-                                   :remote_url => 'http://identi.ca/steveklabnik')
-        u = Fabricate.build(:update, :text => "This is a message mentioning @SteveKlabnik@identi.ca.")
-        assert_match /<a href='#{@author.url}'>@SteveKlabnik@identi.ca<\/a>/, u.to_html
-      end
-
-      it "makes a link (after create)" do
-        @author = Fabricate(:author, :username => "steveklabnik",
-                                   :domain => "identi.ca",
-                                   :remote_url => 'http://identi.ca/steveklabnik')
-        u = Fabricate(:update, :text => "This is a message mentioning @SteveKlabnik@identi.ca.")
-        assert_match /<a href='#{@author.url}'>@SteveKlabnik@identi.ca<\/a>/, u.to_html
-      end
-
-      describe "mentioning a different user" do
-        it "makes a link (before create)" do
-          @mentioned = Fabricate(:author, :username => "chrismdp",
-                              :domain => "rstat.us")
-          @author = Fabricate(:author, :username => "steveklabnik",
-                              :domain => "identi.ca",
-                              :remote_url => 'http://identi.ca/steveklabnik')
-          u = Fabricate.build(:update, :text => "This is a message mentioning @chrismdp@rstat.us.", :author => @author)
           assert_match %r{<a href='http://rstat.us/users/chrismdp'>@chrismdp@rstat.us<\/a>}, u.to_html
         end
+      end
 
+      describe "existing author mentioned in the middle of the word" do
+        it "does not make a link" do
+          Fabricate(:user, :username => "bar")
+          u = Update.new(:text => "test foo@bar.wadus blah")
+
+          assert_match "test foo@bar.wadus blah", u.to_html
+        end
       end
     end
 
-    describe "existing user mentioned in the middle of the word" do
-      before do
-        Fabricate(:user, :username => "steveklabnik")
-        Fabricate(:user, :username => "bar")
+    describe "links" do
+      it "makes http URLs into links" do
+        u = Update.new(:text => "This is a message mentioning http://rstat.us/.")
+
+        assert_match /<a href='http:\/\/rstat.us\/'>http:\/\/rstat.us\/<\/a>/, u.to_html
       end
 
-      it "does not make a link (before create)" do
-        u = Fabricate.build(:update, :text => "@SteveKlabnik @nobody foo@bar.wadus @SteveKlabnik")
-        assert_match "\/users\/steveklabnik'>@SteveKlabnik<\/a> @nobody foo@bar.wadus <a href='http:\/\/#{u.author.domain}\/users\/steveklabnik'>@SteveKlabnik<\/a>", u.to_html
+      it "makes https URLs into links" do
+        u = Update.new(:text => "https://github.com/hotsh/rstat.us/issues#issue/11")
+
+        assert_equal "<a href='https://github.com/hotsh/rstat.us/issues#issue/11'>https://github.com/hotsh/rstat.us/issues#issue/11</a>", u.to_html
       end
 
-      it "does not make a link (after create)" do
-        u = Fabricate(:update, :text => "@SteveKlabnik @nobody foo@bar.wadus @SteveKlabnik")
-        assert_match "\/users\/steveklabnik'>@SteveKlabnik<\/a> @nobody foo@bar.wadus <a href='http:\/\/#{u.author.domain}\/users\/steveklabnik'>@SteveKlabnik<\/a>", u.to_html
+      it "makes URLs in this edge case into links" do
+        edgecase = <<-EDGECASE
+          Not perfect, but until there's an API, you can quick add text to your status using
+          links like this: http://rstat.us/?status={status}
+        EDGECASE
+        u = Update.new(:text => edgecase)
+
+        assert_match "<a href='http://rstat.us/?status={status}'>http://rstat.us/?status={status}</a>", u.to_html
+      end
+    end
+
+    describe "hashtags" do
+      it "makes links if hash starts a word" do
+        u = Update.new(:text => "This is a message with a #hashtag.")
+
+        assert_match /<a href='\/search\?search=%23hashtag'>#hashtag<\/a>/, u.to_html
+      end
+
+      it "does not make a link if hash is in the middle of a word" do
+        u = Update.new(:text => "This is a message with a#hashtag.")
+
+        assert_equal "This is a message with a#hashtag.", u.to_html
+      end
+
+      it "makes links for both a hashtag and a URL" do
+        u = Update.new(:text => "This is a message with a #hashtag and mentions http://rstat.us/.")
+
+        assert_match /<a href='\/search\?search=%23hashtag'>#hashtag<\/a>/, u.to_html
+        assert_match /<a href='http:\/\/rstat.us\/'>http:\/\/rstat.us\/<\/a>/, u.to_html
+      end
+
+      it "makes links for international hashtag and a URL" do
+        hashtag = "#Cantábrico"
+        u = Update.new(:text => "This is a message with a #{hashtag}.")
+        proper_link = "<a href='/search\?search=%23#{hashtag.gsub(/^#/, '')}'>#{hashtag}</a>"
+
+        # Hacky method because MiniTest assert_match method insisted on escaping utf-8 characters within the regex
+        assert( u.to_html.include?(proper_link),
+              "#{u.to_html} does not match #{proper_link}")
       end
     end
   end
 
-  describe "links" do
-    it "makes URLs into links (before create)" do
-      u = Fabricate.build(:update, :text => "This is a message mentioning http://rstat.us/.")
-      assert_match /<a href='http:\/\/rstat.us\/'>http:\/\/rstat.us\/<\/a>/, u.to_html
-      u = Fabricate.build(:update, :text => "https://github.com/hotsh/rstat.us/issues#issue/11")
-      assert_equal "<a href='https://github.com/hotsh/rstat.us/issues#issue/11'>https://github.com/hotsh/rstat.us/issues#issue/11</a>", u.to_html
-    end
-
-    it "makes URLs into links (after create)" do
-      u = Fabricate(:update, :text => "This is a message mentioning http://rstat.us/.")
-      assert_match /<a href='http:\/\/rstat.us\/'>http:\/\/rstat.us\/<\/a>/, u.to_html
-      u = Fabricate(:update, :text => "https://github.com/hotsh/rstat.us/issues#issue/11")
-      assert_equal "<a href='https://github.com/hotsh/rstat.us/issues#issue/11'>https://github.com/hotsh/rstat.us/issues#issue/11</a>", u.to_html
-    end
-
-    it "makes URLs in this edgecase into links" do
-      edgecase = <<-EDGECASE
-        Not perfect, but until there's an API, you can quick add text to your status using
-        links like this: http://rstat.us/?status={status}
-      EDGECASE
-      u = Fabricate.build(:update, :text => edgecase)
-      assert_match "<a href='http://rstat.us/?status={status}'>http://rstat.us/?status={status}</a>", u.to_html
-    end
-  end
-
-  describe "hashtags" do
-    it "makes links if hash starts a word (before create)" do
-      u = Fabricate.build(:update, :text => "This is a message with a #hashtag.")
-      assert_match /<a href='\/search\?search=%23hashtag'>#hashtag<\/a>/, u.to_html
-      u = Fabricate.build(:update, :text => "This is a message with a#hashtag.")
-      assert_equal "This is a message with a#hashtag.", u.to_html
-    end
-
-    it "makes links if hash starts a word (after create)" do
-      u = Fabricate(:update, :text => "This is a message with a #hashtag.")
-      assert_match /<a href='\/search\?search=%23hashtag'>#hashtag<\/a>/, u.to_html
-      u = Fabricate(:update, :text => "This is a message with a#hashtag.")
-      assert_equal "This is a message with a#hashtag.", u.to_html
-    end
-
-    it "makes links for both a hashtag and a URL (after create)" do
-      u = Fabricate(:update, :text => "This is a message with a #hashtag and mentions http://rstat.us/.")
-
-      assert_match /<a href='\/search\?search=%23hashtag'>#hashtag<\/a>/, u.to_html
-      assert_match /<a href='http:\/\/rstat.us\/'>http:\/\/rstat.us\/<\/a>/, u.to_html
-    end
-
+  describe "#tags" do
     it "extracts hashtags" do
-      u = Fabricate(:update, :text => "#lots #of #hash #tags")
+      u = Update.new(:text => "#lots #of #hash #tags")
+      u.get_tags
+
       assert_equal ["lots", "of", "hash", "tags"], u.tags
     end
 
     it "extracts hashtags when international symbols exist in hashtag" do
-      u = Fabricate(:update, :text => "#Cantábrico is an international hashtag")
-      assert_equal ["Cantábrico"], u.tags
-    end
+      u = Update.new(:text => "#Cantábrico is an international hashtag")
+      u.get_tags
 
-    it "makes links for international hashtag and a URL (after create)" do
-      hashtag = "#Cantábrico"
-      u = Fabricate(:update, :text => "This is a message with a #{hashtag}.")
-      proper_link = "<a href='/search\?search=%23#{hashtag.gsub(/^#/, '')}'>#{hashtag}</a>"
-      # Hacky method because MiniTest assert_match method insisted on escaping utf-8 characters within the regex
-      assert( u.to_html.include?(proper_link),
-            "#{u.to_html} does not match #{proper_link}")
+      assert_equal ["Cantábrico"], u.tags
     end
   end
 
   describe "twitter" do
     describe "twitter => true" do
       it "sets the tweeted flag" do
-        u = Fabricate.build(:update, :text => "This is a message", :twitter => true)
-        assert_equal true, u.twitter?
+        u = Update.new(:text => "This is a message", :twitter => true)
+        assert u.twitter?
       end
 
       it "sends the update to twitter" do
@@ -227,8 +209,8 @@ describe Update do
 
     describe "twitter => false (default)" do
       it "does not set the tweeted flag" do
-        u = Fabricate.build(:update, :text => "This is a message.")
-        assert_equal false, u.twitter?
+        u = Update.new(:text => "This is a message.")
+        refute u.twitter?
       end
 
       it "does not send the update to twitter" do

@@ -5,7 +5,13 @@ describe AuthorJsonDecorator do
 
   describe '#to_json, which implicitly calls as_json' do
     before do
-      @author           = Fabricate(:author)
+      @author           = Author.new(
+                            :username => "foo",
+                            :name     => "Mr. Foo Bar",
+                            :website  => "http://example.com",
+                            :bio      => "Bio bio bio",
+                            :email    => "foo@example.com"
+                          )
       @decorated_author = AuthorJsonDecorator.decorate(@author)
       @json             = @decorated_author.to_json
       @parsed_json      = JSON.parse(@json)

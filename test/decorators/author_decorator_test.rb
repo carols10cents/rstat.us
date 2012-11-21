@@ -2,13 +2,13 @@ require_relative '../test_helper'
 
 describe AuthorDecorator do
   include TestHelper
+  before do
+    @author = AuthorDecorator.decorate(Author.new)
+  end
 
   describe '#website_link' do
-    before do
-      @author = AuthorDecorator.decorate(Fabricate(:author))
-    end
-
     it 'returns link to authors website' do
+      @author.website = "http://example.com"
       @author.website_link.must_match('http://example.com')
     end
 
@@ -24,11 +24,8 @@ describe AuthorDecorator do
   end
 
   describe "#absolute_website_url" do
-    before do
-      @author = AuthorDecorator.decorate(Fabricate(:author))
-    end
-
     it 'returns url to authors website' do
+      @author.website = "http://example.com"
       @author.absolute_website_url.must_equal('http://example.com')
     end
 
@@ -44,10 +41,6 @@ describe AuthorDecorator do
   end
 
   describe "#avatar" do
-    before do
-      @author = AuthorDecorator.decorate(Fabricate(:author))
-    end
-
     it "has a link to the author's page around the author's image" do
       @avatar_html = Nokogiri::HTML.parse(@author.avatar)
       link = @avatar_html.at_xpath("//a")
@@ -76,24 +69,20 @@ describe AuthorDecorator do
   end
 
   describe "#absolute_avatar_url" do
-    before do
-      @fabricated_author = Fabricate(:author)
-      @author = AuthorDecorator.decorate(@fabricated_author)
-    end
-
     it "uses the author's avatar url if present" do
       avatar_url = "http://example.com/avatar.png"
-      @fabricated_author.image_url = avatar_url
+      @author.image_url = avatar_url
 
       @author.absolute_avatar_url.must_equal(avatar_url)
     end
 
     it "creates a gravatar url if avatar url isnt present but email is" do
+      @author.email = "some_author_email@example.com"
       @author.absolute_avatar_url.must_match("gravatar.com")
     end
 
     it "uses the rstat.us default avatar if avatar url isn't specified" do
-      @fabricated_author.email = nil
+      @author.email = nil
 
       @author.absolute_avatar_url.must_equal(
         "/assets/#{RstatUs::DEFAULT_AVATAR}"
