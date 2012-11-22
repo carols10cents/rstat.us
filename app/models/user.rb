@@ -338,7 +338,6 @@ class User
     unless params[:password].nil? or params[:password].empty?
       if params[:password] == params[:password_confirm]
         self.password = params[:password]
-        self.save
       else
         return "Passwords must match"
       end

@@ -65,6 +65,33 @@ describe "edit profile" do
       assert has_field?("password")
     end
 
+    it "doesn't save the updated password if the email update doesn't save" do
+      @existing_user = Fabricate(:user, :email_confirmed => true)
+
+      @u.password = "old_password"
+      @u.save!
+
+      previous_password = @u.hashed_password
+
+      visit "/users/#{@u.username}/edit"
+
+      fill_in "password", :with => "new_password"
+      fill_in "password_confirm", :with => "new_password"
+
+      fill_in "email", :with => @existing_user.email
+
+      VCR.use_cassette("update_profile_multiple_saves_bug") do
+        click_button "Save"
+      end
+
+      within flash do
+        assert has_content?("Profile could not be saved:")
+        assert has_content?("Email is already taken.")
+      end
+
+      @u.reload.hashed_password.must_equal previous_password
+    end
+
     it "verifies your email if you change it" do
       visit "/users/#{@u.username}/edit"
       email = "new_email@new_email.com"
