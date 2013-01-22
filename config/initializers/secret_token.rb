@@ -21,4 +21,4 @@ if ENV["SECRET_TOKEN"].blank?
   end
 end
 
-RstatUs::Application.config.secret_token = ENV["SECRET_TOKEN"]
+RstatUs::Application.config.secret_key_base = ENV["SECRET_TOKEN"]
