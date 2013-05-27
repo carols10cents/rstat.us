@@ -53,6 +53,7 @@ describe "update" do
       VCR.use_cassette('publish_update') do
         visit "/"
         fill_in 'update-textarea', :with => update_text
+        check 'not-a-spammer'
         click_button :'update-button'
       end
 
@@ -63,6 +64,20 @@ describe "update" do
       post "/updates", {:text => "probably spam"}
 
       last_response.status.must_equal 302
+    end
+  end
+
+  describe "spam mitigation" do
+    describe "without javascript" do
+      it "does not allow users that don't check the 'I am not a spammer' box to create an update" do
+        log_in_as_some_user
+        visit "/"
+        fill_in 'update-textarea', :with => "buy this stuff"
+        click_button :'update-button'
+
+        text.must_include "Sorry, it looks like you're a spammer."
+        text.wont_include "buy this stuff"
+      end
     end
   end
 
@@ -137,6 +152,7 @@ describe "update" do
 
       visit "/updates"
       fill_in "text", :with => "So this one time #coolstorybro"
+      check 'not-a-spammer'
       VCR.use_cassette('publish_to_hub') {click_button "Share"}
 
       visit "/updates"

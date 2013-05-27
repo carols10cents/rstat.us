@@ -45,25 +45,29 @@ class UpdatesController < ApplicationController
   end
 
   def create
-    # XXX: This should really be put into a model. Fat controller here!
-    do_tweet = params[:tweet] == "1"
-    u = Update.new(:text => params[:text],
-                   :referral_id => params[:referral_id],
-                   :author => current_user.author,
-                   :twitter => do_tweet)
+    if params["not-a-spammer"]
+      # XXX: This should really be put into a model. Fat controller here!
+      do_tweet = params[:tweet] == "1"
+      u = Update.new(:text => params[:text],
+                     :referral_id => params[:referral_id],
+                     :author => current_user.author,
+                     :twitter => do_tweet)
 
-    # add entry to user's feed
-    current_user.feed.updates << u
+      # add entry to user's feed
+      current_user.feed.updates << u
 
-    unless u.valid?
-      flash[:error] = u.errors.values.join("\n")
+      unless u.valid?
+        flash[:error] = u.errors.values.join("\n")
+      else
+        current_user.feed.save
+        current_user.save
+        # tell hubs there is a new entry
+        current_user.feed.ping_hubs
+
+        flash[:notice] = "Update created."
+      end
     else
-      current_user.feed.save
-      current_user.save
-      # tell hubs there is a new entry
-      current_user.feed.ping_hubs
-
-      flash[:notice] = "Update created."
+      flash[:notice] = "Sorry, it looks like you're a spammer."
     end
 
     reply_redirect = request.referrer.include?("reply=")

@@ -8,6 +8,7 @@ describe "Authorization" do
   def assert_publish_succeeds update_text
     VCR.use_cassette('publish_to_hub') do
       fill_in "text", :with => update_text
+      check 'not-a-spammer'
       click_button "Share"
     end
 
