@@ -1,4 +1,13 @@
 GIT
+  remote: git://github.com/carols10cents/osub.git
+  revision: a5211848bb5c3de834f826c26f84eb00114b4ae8
+  branch: no-async
+  specs:
+    osub (0.0.9)
+      ostatus
+      ruby-hmac
+
+GIT
   remote: git://github.com/collectiveidea/delayed_job.git
   revision: 8dc3930f20eb7363ef0d451ac05a3851eb0caaf6
   tag: v2.1.4
@@ -176,9 +185,6 @@ GEM
     opub (0.0.1)
     ostatus (1.0.0)
       ratom (~> 0.8.2)
-    osub (1.0.0)
-      ostatus
-      ruby-hmac
     plucky (0.5.2)
       mongo (~> 1.5)
     polyglot (0.3.5)
@@ -321,7 +327,7 @@ DEPENDENCIES
   open_uri_redirections (~> 0.1.4)
   opub (~> 0.0.1)
   ostatus (~> 1.0.0)
-  osub (~> 1.0.0)
+  osub!
   pony (~> 1.3)
   puma (~> 2.9.0)
   pygmentize (~> 0.0.3)
